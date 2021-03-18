@@ -8,10 +8,9 @@ const data = dataAccount.account;
 const accountsList = TestConfig.followAccounts;
 
 const client = Client(followAccounts.url);
-let blocks = [];
 let stream;
 let transactions = [];
-let blockObject = {};
+let html = '';
 
 const createPrivateKey = function() {
     try {
@@ -26,22 +25,23 @@ const listenBlocks = async ()=>{
     stream = client.Blockchain.getBlockStream();
     stream
         .on('data', block => {
-            blockObject.block_id = block.block_id;
             transactions = block.transactions.filter((transaction)=>{
+                //Reviso cada transaccion en el bloque y si esta es un blos un comentario reviso el autor
                 let val = (transaction == 'blog'|| transaction == 'comment') ? 
-                    (accountsList.contains(transaction.author)) ? true : false : false;
+                    (accountsList.contains(transaction.author)) ? true : false : false;               
                 return val;
             });
-            blockObject.transactions = block.transactions
-            transactions.forEach(transaction => {
-                vote(transaction.author,transaction.permlink)
-            });
-            (transactions===[]) ? blocks.unshift(
+            html = (transactions!==[]) ?
                 `<div class="list-group-item"><h5 class="list-group-item-heading">Block id: ${
                     block.block_id
-                }</h5></div>`
-            ): '';
-            document.getElementById('Content').innerHTML = blocks.join(' ')
+                }</h5></div>
+                <div id=${block.block_id}>
+                </div>`
+            : '';
+            document.getElementById('Block').innerHTML.concat(html);
+            transactions.forEach(transaction => {
+                vote(block.block_id,transaction.author,transaction.permlink)
+            });
         })
         .on('end', function() {
             console.log('END');
@@ -49,12 +49,12 @@ const listenBlocks = async ()=>{
 }
 listenBlocks().catch(console.error);
 
-async function vote (author,permlink) {
+async function vote (blockId,authorP,permlinkP) {
     const voter = data.address;
     const privateKey = createPrivateKey();
-    const author = document.getElementById('author').value;
-    const permlink = document.getElementById('permlink').value;
-    const weight = parseInt(10);
+    const author = authorP;
+    const permlink = permlinkP;
+    const weight = 10;
     //create vote object
     const vote = {
         voter,
@@ -66,9 +66,11 @@ async function vote (author,permlink) {
     client.broadcast.vote(vote, privateKey).then(
         function(result) {
             console.log('success:', result);
+            document.getElementById(blockId).innerHTML.concat(result);
         },
         function(error) {
             console.log('error:', error);
+            document.getElementById(blockId).innerHTML.concat(error);
         }
     );
 }
