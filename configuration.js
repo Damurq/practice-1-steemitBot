@@ -1,8 +1,4 @@
 export const Test = {
-    account: {
-        address: "Damurq",
-        privActive: ""
-    },
     followAccounts: [
         "erpirio",
         "meryju79",

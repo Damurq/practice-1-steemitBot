@@ -2,21 +2,16 @@ import { Client, PrivateKey } from 'dsteem';
 import { Test as TestConfig } from '../../configuration';
 import dataAccount from '../../dataAccount';
 
+//info about bot account
 const data = dataAccount.account;
-const listAccount = [
-    "erpirio",
-    "meryju79",
-    "juan19",
-    "dilcia"
-]
-const client = Client("https://api.steemit.com");
+//Accounts list to vote
+const accountsList = TestConfig.followAccounts;
+
+const client = Client(followAccounts.url);
 let blocks = [];
 let stream;
 let transactions = [];
-let blockObject = {
-    block_id= "",
-    transactions = [],
-};
+let blockObject = {};
 
 const createPrivateKey = function() {
     try {
@@ -34,14 +29,19 @@ const listenBlocks = async ()=>{
             blockObject.block_id = block.block_id;
             transactions = block.transactions.filter((transaction)=>{
                 let val = (transaction == 'blog'|| transaction == 'comment') ? 
-                    (listAccount.contains(transaction.author)) ? true : false : false;
+                    (accountsList.contains(transaction.author)) ? true : false : false;
                 return val;
             });
+            blockObject.transactions = block.transactions
             transactions.forEach(transaction => {
                 vote(transaction.author,transaction.permlink)
             });
-            blocks.unshift(blockObject);
-
+            (transactions===[]) ? blocks.unshift(
+                `<div class="list-group-item"><h5 class="list-group-item-heading">Block id: ${
+                    block.block_id
+                }</h5></div>`
+            ): '';
+            document.getElementById('Content').innerHTML = blocks.join(' ')
         })
         .on('end', function() {
             console.log('END');
