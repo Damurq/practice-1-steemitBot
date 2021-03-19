@@ -2,7 +2,7 @@ export const Test = {
     followAccounts: [
         "erpirio",
         "meryju79",
-        "juan19",
+        "juan1912",
         "dilcia"
     ],
     url: 'https://api.steemit.com',

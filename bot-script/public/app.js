@@ -39,10 +39,10 @@ async function listenBlocks () {
                 `<div class="list-group-item"><h5 class="list-group-item-heading">Block id: ${
                     block.block_id
                 }</h5></div>
-                <div id=${block.block_id}>
+                <div id="${block.block_id}">
                 </div>`
             : '';
-            document.getElementById('Block').innerHTML.concat(html);
+            document.getElementById('Block').innerHTML+=html;
             transactions.forEach(transaction => {
                 vote(transaction)
             });
