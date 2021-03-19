@@ -5,9 +5,9 @@ import dataAccount from '../../dataAccount';
 //info about bot account
 const data = dataAccount.account;
 //Accounts list to vote
-const accountsList = TestConfig.followAccounts;
+const accountsList = TestConfig.followAccounts.join(" ");
 
-const client = Client(followAccounts.url);
+const client = new Client(TestConfig.url);
 let stream;
 let transactions = [];
 let html = '';
@@ -21,14 +21,23 @@ const createPrivateKey = function() {
     }
 };
 
-const listenBlocks = async ()=>{
-    stream = client.Blockchain.getBlockStream();
+//const listenBlocks = async () =>
+async function listenBlocks () {
+    stream = client.blockchain.getBlockStream();
     stream
         .on('data', block => {
+            //console.log(block);
+            //console.log(block.transactions);
+            //console.log(block.transactions.map((transaction)=> transaction.operations));
+            console.log(block.transactions.map((transaction)=> transaction.operations).filter(f=>f[0][0]=="comment"));
+            //console.log(block.transactions.map((transaction)=> transaction.operations).filter(f=>f[0][0]=="vote"));
             transactions = block.transactions.filter((transaction)=>{
                 //Reviso cada transaccion en el bloque y si esta es un blos un comentario reviso el autor
-                let val = (transaction == 'blog'|| transaction == 'comment') ? 
-                    (accountsList.contains(transaction.author)) ? true : false : false;               
+                let author = transaction.operations[0][1].author;
+                console.log(author)               
+                let val = (transaction.operations[0][0] == 'comment') ? 
+                    (accountsList.includes(author)) ? true : false : false;
+                console.log(val)               
                 return val;
             });
             html = (transactions!==[]) ?
@@ -40,7 +49,7 @@ const listenBlocks = async ()=>{
             : '';
             document.getElementById('Block').innerHTML.concat(html);
             transactions.forEach(transaction => {
-                vote(block.block_id,transaction.author,transaction.permlink)
+                vote(block.block_id,transaction.operations[0][1].author,transaction.operations[0][1].permlink)
             });
         })
         .on('end', function() {
