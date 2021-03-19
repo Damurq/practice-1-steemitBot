@@ -26,19 +26,14 @@ async function listenBlocks () {
     stream = client.blockchain.getBlockStream();
     stream
         .on('data', block => {
-            //console.log(block);
-            //console.log(block.transactions);
-            //console.log(block.transactions.map((transaction)=> transaction.operations));
-            console.log(block.transactions.map((transaction)=> transaction.operations).filter(f=>f[0][0]=="comment"));
-            //console.log(block.transactions.map((transaction)=> transaction.operations).filter(f=>f[0][0]=="vote"));
-            transactions = block.transactions.filter((transaction)=>{
+            block.transactions.forEach((transaction)=>{
                 //Reviso cada transaccion en el bloque y si esta es un blos un comentario reviso el autor
-                let author = transaction.operations[0][1].author;
-                console.log(author)               
-                let val = (transaction.operations[0][0] == 'comment') ? 
-                    (accountsList.includes(author)) ? true : false : false;
-                console.log(val)               
-                return val;
+                (transaction.operations[0][0] == 'comment') ? 
+                    (accountsList.includes(transaction.operations[0][1].author)) ? transactions.unshift({
+                    blockId: block.block_id,
+                    author:transaction.operations[0][1].author,
+                    permlink:transaction.operations[0][1].permlink
+                }) : "" : "";
             });
             html = (transactions!==[]) ?
                 `<div class="list-group-item"><h5 class="list-group-item-heading">Block id: ${
@@ -49,8 +44,9 @@ async function listenBlocks () {
             : '';
             document.getElementById('Block').innerHTML.concat(html);
             transactions.forEach(transaction => {
-                vote(block.block_id,transaction.operations[0][1].author,transaction.operations[0][1].permlink)
+                vote(transaction)
             });
+            transactions =[];
         })
         .on('end', function() {
             console.log('END');
@@ -58,11 +54,11 @@ async function listenBlocks () {
 }
 listenBlocks().catch(console.error);
 
-async function vote (blockId,authorP,permlinkP) {
+async function vote (transaction) {
     const voter = data.address;
     const privateKey = createPrivateKey();
-    const author = authorP;
-    const permlink = permlinkP;
+    const author = transaction.author;
+    const permlink = transaction.permlink;
     const weight = 10;
     //create vote object
     const vote = {
@@ -75,11 +71,11 @@ async function vote (blockId,authorP,permlinkP) {
     client.broadcast.vote(vote, privateKey).then(
         function(result) {
             console.log('success:', result);
-            document.getElementById(blockId).innerHTML.concat(result);
+            document.getElementById(transaction.blockId).innerHTML.concat(result);
         },
         function(error) {
             console.log('error:', error);
-            document.getElementById(blockId).innerHTML.concat(error);
+            document.getElementById(transaction.blockId).innerHTML.concat(error);
         }
     );
 }
