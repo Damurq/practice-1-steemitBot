@@ -1,16 +1,16 @@
-# Bot para votar
+# Voting bot
 
 ## Intro
 
-Este bot fue diseñado para escuchar la cadena de bloques Steem y votar por los comentario o blog realizados por unas cuentas especificas
+This bot was designed to listen to the Steem blockchain and vote for the comments or blog made by specific accounts
 
-## Estructura
+## Structure
 
-#### 1. Datos
+#### 1. Data
 
-El bot se encarga de leer los datos de dos archivos que deben estar ubicados en la carpeta raíz
+The bot is responsible for reading the data from two files that must be located in the root folder
 
-El archivo configuration.js tiene la siguiente estructura:
+The configuration.js file has the following structure:
 
 ```javascript
 export const Test = {
@@ -28,9 +28,9 @@ export const Test = {
     },
 };
 ```
-followAccounts es una lista de los nombres de las cuentas, esta lista será usada para determinar si alguna de esas cuentas realizo un comentario o post para votar por ella.
+followAccounts is a list of the names of the accounts, this list will be used to determine if any of those accounts made a comment or post to vote for it.
 
-El archivo dataAccount.json tiene la siguiente estructura:
+The dataAccount.json file has the following structure:
 
 ```json
 {
@@ -41,14 +41,14 @@ El archivo dataAccount.json tiene la siguiente estructura:
 }
 ```
 
-address es el nombre de la cuenta 
-privActive es la clave privada
+"address" is the name of the account
+"privActive" is the private key
 
-#### 1. El bot
+#### 1.The bot
 
-El bot ejecuta la función "listenBlocks" esta escucha los bloques generados y en caso de que alguna transacción fuera un post o un comentario procede a verificar si el autor es alguno de los  incluidos en el archivo "configuration.js" , en caso de ser así almacena los datos necesarios en un objeto que a su vez será enviado a una lista llamada "transactions".
+The bot executes the "listenBlocks" function, it listens to the generated blocks and in case any transaction was a post or a comment, it proceeds to verify if the author is one of those included in the "configuration.js" file, if applicable. thus it stores the necessary data in an object which in turn will be sent to a list called "transactions".
 
-Una vez que se revisaron todas las transacciones de un bloque se realiza un foreach donde se ejecuta la función vote en cada una de las transacciones que cumplieron los requisitos
+Once all the transactions in a block have been reviewed, a foreach is performed where the vote function is executed in each of the transactions that met the requirements
 
 
 ### To Run  
