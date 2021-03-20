@@ -28,7 +28,7 @@ async function listenBlocks () {
             block.transactions.forEach((transaction)=>{
                 //I review each transaction in the block and if this is a blos a comment I review the author
                 (transaction.operations[0][0] == 'comment') ? 
-                    (accountsList.indexOf(transaction.operations[0][1].author)!==1) ? transactions.unshift({
+                    (accountsList.indexOf(transaction.operations[0][1].author)!==-1) ? transactions.unshift({
                     blockId: block.block_id,
                     author:transaction.operations[0][1].author,
                     permlink:transaction.operations[0][1].permlink
@@ -58,7 +58,7 @@ async function vote (transaction) {
     const privateKey = createPrivateKey();
     const author = transaction.author;
     const permlink = transaction.permlink;
-    const weight = 100;
+    const weight = 1000;
     //create vote object
     const vote = {
         voter,
