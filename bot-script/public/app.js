@@ -35,7 +35,7 @@ async function listenBlocks () {
                     permlink:transaction.operations[0][1].permlink
                 }) : "" : "";
             });
-            html = (transactions!==[]) ?
+            html = (transactions.length!==0) ?
                 `<div class="list-group-item"><h5 class="list-group-item-heading">Block id: ${
                     block.block_id
                 }</h5></div>
@@ -71,11 +71,11 @@ async function vote (transaction) {
     client.broadcast.vote(vote, privateKey).then(
         function(result) {
             console.log('success:', result);
-            document.getElementById(transaction.blockId).innerHTML.concat(result);
+            document.getElementById(transaction.blockId).innerHTML="vote id: :"+ result.id;
         },
         function(error) {
             console.log('error:', error);
-            document.getElementById(transaction.blockId).innerHTML.concat(error);
+            document.getElementById(transaction.blockId).innerHTML=error;
         }
     );
 }
