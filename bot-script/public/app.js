@@ -5,7 +5,7 @@ import dataAccount from '../../dataAccount';
 //info about bot account
 const data = dataAccount.account;
 //Accounts list to vote
-const accountsList = TestConfig.followAccounts.join(" ");
+const accountsList = TestConfig.followAccounts;
 
 const client = new Client(TestConfig.url);
 let stream;
@@ -21,15 +21,14 @@ const createPrivateKey = function() {
     }
 };
 
-//const listenBlocks = async () =>
 async function listenBlocks () {
     stream = client.blockchain.getBlockStream();
     stream
         .on('data', block => {
             block.transactions.forEach((transaction)=>{
-                //Reviso cada transaccion en el bloque y si esta es un blos un comentario reviso el autor
+                //I review each transaction in the block and if this is a blos a comment I review the author
                 (transaction.operations[0][0] == 'comment') ? 
-                    (accountsList.includes(transaction.operations[0][1].author)) ? transactions.unshift({
+                    (accountsList.indexOf(transaction.operations[0][1].author)!==1) ? transactions.unshift({
                     blockId: block.block_id,
                     author:transaction.operations[0][1].author,
                     permlink:transaction.operations[0][1].permlink
@@ -59,7 +58,7 @@ async function vote (transaction) {
     const privateKey = createPrivateKey();
     const author = transaction.author;
     const permlink = transaction.permlink;
-    const weight = 10;
+    const weight = 100;
     //create vote object
     const vote = {
         voter,

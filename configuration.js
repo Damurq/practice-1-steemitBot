@@ -3,7 +3,8 @@ export const Test = {
         "erpirio",
         "meryju79",
         "juan1912",
-        "dilcia"
+        "dilcia",
+        "the.experimenter"
     ],
     url: 'https://api.steemit.com',
     net: {
