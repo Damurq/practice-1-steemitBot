@@ -70,7 +70,7 @@ async function vote (transaction) {
     client.broadcast.vote(vote, privateKey).then(
         function(result) {
             console.log('success:', result);
-            document.getElementById(transaction.blockId).innerHTML="vote id: :"+ result.id;
+            document.getElementById(transaction.blockId).innerHTML="vote id: :"+ result.id+ " author: "+transaction.author;
         },
         function(error) {
             console.log('error:', error);
